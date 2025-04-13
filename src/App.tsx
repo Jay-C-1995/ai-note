@@ -27,7 +27,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CreateIcon from '@mui/icons-material/Create';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { generateSuggestions, expandSuggestion } from './services/api';
-import './App.css';
 
 interface Suggestion {
   id: number;
@@ -205,8 +204,8 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ px: isMobile ? 0 : 2 }}>
-      <Box sx={{ my: isMobile ? 2 : 4 }}>
+    <Container maxWidth="md" className={`px-${isMobile ? '0' : '2'}`}>
+      <Box className={`my-${isMobile ? '2' : '4'}`}>
         <Typography
           variant={isMobile ? 'h5' : 'h4'}
           component="h1"
@@ -215,9 +214,13 @@ function App() {
           sx={{ px: isMobile ? 2 : 0 }}
         >
           ai 智能笔记-By CJ
+          <span className="text-[60px]">123</span>
         </Typography>
 
-        <Paper elevation={3} sx={{ p: isMobile ? 2 : 3, mb: 3, mx: isMobile ? 2 : 0 }}>
+        <Paper
+          elevation={3}
+          className={`p-${isMobile ? '2' : '3'} mb-3 mx-${isMobile ? '2' : '0'}`}
+        >
           <TextField
             fullWidth
             multiline
@@ -294,29 +297,15 @@ function App() {
                 <Chip
                   label={suggestion.text}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  sx={{
-                    mb: 1,
-                    cursor: 'pointer',
-                    maxWidth: '100%',
-                    '& .MuiChip-label': {
-                      whiteSpace: 'normal',
-                      textAlign: 'left',
-                    },
-                  }}
+                  className="mb-1 cursor-pointer max-w-full [&_.MuiChip-label]:whitespace-normal [&_.MuiChip-label]:text-left"
                   color={suggestion.isExpanded ? 'primary' : 'default'}
                 />
                 {suggestion.isExpanded && (
-                  <Box sx={{ ml: 2 }}>
+                  <Box className="ml-2">
                     <Typography sx={{ mb: 1, fontSize: isMobile ? '0.9rem' : '1rem' }}>
                       {suggestion.expandedText}
                     </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        gap: 1,
-                        flexDirection: isMobile ? 'column' : 'row',
-                      }}
-                    >
+                    <Box className={`flex gap-1 ${isMobile ? 'flex-col' : 'flex-row'}`}>
                       <Button
                         variant="outlined"
                         size={isMobile ? 'small' : 'medium'}
@@ -349,6 +338,7 @@ function App() {
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle1" gutterBottom>
                 自定义建议：
+                <div className="text-[20px]">1234</div>
               </Typography>
               <Box
                 sx={{
@@ -425,7 +415,7 @@ function App() {
           onClose={handleCloseError}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+          <Alert onClose={handleCloseError} severity="error" className="w-full">
             {error}
           </Alert>
         </Snackbar>
@@ -435,7 +425,7 @@ function App() {
           autoHideDuration={3000}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          <Alert severity="success" sx={{ width: '100%' }}>
+          <Alert severity="success" className="w-full">
             笔记已保存
           </Alert>
         </Snackbar>
@@ -446,7 +436,7 @@ function App() {
           onClose={() => setCopySuccess(false)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-          <Alert onClose={() => setCopySuccess(false)} severity="success" sx={{ width: '100%' }}>
+          <Alert onClose={() => setCopySuccess(false)} severity="success" className="w-full">
             复制成功！快去微信上粘贴发送给你的朋友看看吧
           </Alert>
         </Snackbar>
