@@ -217,25 +217,38 @@ function App() {
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Tooltip title="保存笔记">
-              <IconButton 
-                color="primary" 
+              <IconButton
+                color="primary"
                 onClick={handleSave}
                 disabled={!note.trim()}
-                size={isMobile ? "small" : "medium"}
               >
                 <SaveIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="生成建议">
-              <IconButton 
-                color="primary" 
+            {isMobile ? (
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={handleSubmit}
                 disabled={isLoading || !note.trim()}
-                size={isMobile ? "small" : "medium"}
+                startIcon={isLoading ? <CircularProgress size={20} /> : <SendIcon />}
+                sx={{ ml: 1 }}
               >
-                {isLoading ? <CircularProgress size={isMobile ? 20 : 24} /> : <SendIcon />}
-              </IconButton>
-            </Tooltip>
+                生成建议
+              </Button>
+            ) : (
+              <Tooltip title="生成建议">
+                <span>
+                  <IconButton
+                    color="primary"
+                    onClick={handleSubmit}
+                    disabled={isLoading || !note.trim()}
+                  >
+                    {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
           </Box>
         </Paper>
 
