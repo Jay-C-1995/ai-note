@@ -1,46 +1,87 @@
+# AI 智能笔记
+
+一个基于 React 和 TypeScript 开发的 AI 辅助写作工具，帮助用户更好地组织和扩展他们的想法。
+
+## 项目作者
+
+- 姓名：Jay_C
+- 简介：一个对 AI 技术充满热情的开发者，这个项目是我探索 AI 应用的一个练手项目，旨在通过实践来学习和掌握 AI 技术的实际应用。
+
+## 项目特点
+
+- 🎯 **智能建议生成**：基于用户输入的内容，自动生成相关的写作建议
+- ✍️ **自定义建议**：用户可以输入自己的话题，让 AI 帮助展开
+- 🔄 **建议修改**：对 AI 生成的建议不满意？可以提出修改意见，让 AI 重新生成
+- 💾 **自动保存**：笔记内容自动保存到本地，不用担心丢失
+- 🎨 **美观界面**：采用 Material-UI 设计，提供流畅的用户体验
+
+## 主要功能
+
+1. **智能建议**
+   - 输入日记内容后，AI 会自动生成相关的写作建议
+   - 点击建议可以查看详细内容
+   - 可以采纳建议，将内容添加到日记中
+
+2. **自定义建议**
+   - 在建议区域下方可以输入自定义话题
+   - AI 会根据输入生成详细的建议内容
+   - 新生成的建议会添加到建议列表中
+
+3. **建议修改**
+   - 对 AI 生成的建议不满意？
+   - 可以提出具体的修改意见
+   - AI 会根据修改意见重新生成内容
+
+4. **笔记管理**
+   - 自动保存功能，保护你的写作成果
+   - 简洁的界面设计，专注于写作体验
+   - 支持多段落编辑
+
+## 技术栈
+
+- React
+- TypeScript
+- Material-UI
+- DeepSeek API
+
+## 如何运行
+
+1. 克隆项目
+```bash
+git clone [项目地址]
+```
+
+2. 安装依赖
+```bash
+cd ai-note
+npm install
+```
+
+3. 配置环境变量
+创建 `.env` 文件并添加你的 DeepSeek API 密钥：
+```
+REACT_APP_DEEPSEEK_API_KEY=your_api_key_here
+```
+
+4. 启动项目
+```bash
+npm start
+```
+
+## 未来计划
+
+- [ ] 添加更多 AI 模型支持
+- [ ] 实现笔记分类和标签功能
+- [ ] 添加导出功能
+- [ ] 优化移动端体验
+- [ ] 添加用户认证系统
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目！
+
+## 许可证
+
+MIT License
+
 # Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
