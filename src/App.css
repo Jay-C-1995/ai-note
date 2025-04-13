@@ -15,8 +15,8 @@ body {
 
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -51,10 +51,16 @@ body {
 /* 建议项样式 */
 .MuiChip-root {
   transition: all 0.2s ease;
+  max-width: 100%;
 }
 
 .MuiChip-root:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
+}
+
+.MuiChip-label {
+  white-space: normal;
+  text-align: left;
 }
 
 /* 展开内容样式 */
@@ -81,6 +87,34 @@ body {
 .MuiButton-root:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 移动端优化 */
+@media (max-width: 600px) {
+  .App {
+    padding: 10px 0;
+  }
+
+  .MuiContainer-root {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .MuiPaper-root {
+    margin: 8px 0;
+  }
+
+  .MuiTypography-h5 {
+    font-size: 1.5rem;
+  }
+
+  .MuiButton-root {
+    padding: 6px 12px;
+  }
+
+  .MuiIconButton-root {
+    padding: 8px;
+  }
 }
 
 .App-logo {

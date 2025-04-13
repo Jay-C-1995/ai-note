@@ -16,7 +16,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Divider
+  Divider,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
@@ -45,6 +47,9 @@ function App() {
   const [isModifying, setIsModifying] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // 从本地存储加载保存的笔记
   useEffect(() => {
@@ -187,17 +192,23 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          AI 智能笔记
+    <Container maxWidth="md" sx={{ px: isMobile ? 0 : 2 }}>
+      <Box sx={{ my: isMobile ? 2 : 4 }}>
+        <Typography 
+          variant={isMobile ? "h5" : "h4"} 
+          component="h1" 
+          gutterBottom 
+          align="center"
+          sx={{ px: isMobile ? 2 : 0 }}
+        >
+          ai 智能笔记-By CJ
         </Typography>
         
-        <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+        <Paper elevation={3} sx={{ p: isMobile ? 2 : 3, mb: 3, mx: isMobile ? 2 : 0 }}>
           <TextField
             fullWidth
             multiline
-            rows={12}
+            rows={isMobile ? 20 : 30}
             variant="outlined"
             placeholder="开始记录你的想法..."
             value={note}
@@ -210,6 +221,7 @@ function App() {
                 color="primary" 
                 onClick={handleSave}
                 disabled={!note.trim()}
+                size={isMobile ? "small" : "medium"}
               >
                 <SaveIcon />
               </IconButton>
@@ -219,16 +231,17 @@ function App() {
                 color="primary" 
                 onClick={handleSubmit}
                 disabled={isLoading || !note.trim()}
+                size={isMobile ? "small" : "medium"}
               >
-                {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                {isLoading ? <CircularProgress size={isMobile ? 20 : 24} /> : <SendIcon />}
               </IconButton>
             </Tooltip>
           </Box>
         </Paper>
 
         {suggestions.length > 0 && (
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper elevation={3} sx={{ p: isMobile ? 2 : 3, mx: isMobile ? 2 : 0 }}>
+            <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom>
               建议提示：
             </Typography>
             {suggestions.map((suggestion) => (
@@ -236,28 +249,42 @@ function App() {
                 <Chip
                   label={suggestion.text}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  sx={{ mb: 1, cursor: 'pointer' }}
+                  sx={{ 
+                    mb: 1, 
+                    cursor: 'pointer',
+                    maxWidth: '100%',
+                    '& .MuiChip-label': {
+                      whiteSpace: 'normal',
+                      textAlign: 'left'
+                    }
+                  }}
                   color={suggestion.isExpanded ? 'primary' : 'default'}
                 />
                 {suggestion.isExpanded && (
                   <Box sx={{ ml: 2 }}>
-                    <Typography sx={{ mb: 1 }}>
+                    <Typography sx={{ mb: 1, fontSize: isMobile ? '0.9rem' : '1rem' }}>
                       {suggestion.expandedText}
                     </Typography>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      gap: 1,
+                      flexDirection: isMobile ? 'column' : 'row'
+                    }}>
                       <Button
                         variant="outlined"
-                        size="small"
+                        size={isMobile ? "small" : "medium"}
                         startIcon={<AddIcon />}
                         onClick={() => handleAdoptSuggestion(suggestion)}
+                        fullWidth={isMobile}
                       >
                         采纳建议
                       </Button>
                       <Button
                         variant="outlined"
-                        size="small"
+                        size={isMobile ? "small" : "medium"}
                         startIcon={<EditIcon />}
                         onClick={() => handleModifySuggestion(suggestion)}
+                        fullWidth={isMobile}
                       >
                         修改建议
                       </Button>
@@ -265,7 +292,7 @@ function App() {
                   </Box>
                 )}
                 {isExpanding === suggestion.id && (
-                  <CircularProgress size={20} sx={{ ml: 1 }} />
+                  <CircularProgress size={isMobile ? 16 : 20} sx={{ ml: 1 }} />
                 )}
               </Box>
             ))}
@@ -276,11 +303,16 @@ function App() {
               <Typography variant="subtitle1" gutterBottom>
                 自定义建议：
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 1, 
+                alignItems: 'flex-start',
+                flexDirection: isMobile ? 'column' : 'row'
+              }}>
                 <TextField
                   fullWidth
                   multiline
-                  rows={2}
+                  rows={isMobile ? 8 : 12}
                   variant="outlined"
                   placeholder="输入您想要 AI 帮助展开的话题..."
                   value={customPrompt}
@@ -291,8 +323,9 @@ function App() {
                     color="primary" 
                     onClick={handleGenerateCustomSuggestion}
                     disabled={isGeneratingCustom || !customPrompt.trim()}
+                    sx={{ alignSelf: isMobile ? 'flex-end' : 'auto' }}
                   >
-                    {isGeneratingCustom ? <CircularProgress size={24} /> : <CreateIcon />}
+                    {isGeneratingCustom ? <CircularProgress size={isMobile ? 20 : 24} /> : <CreateIcon />}
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -305,6 +338,7 @@ function App() {
           onClose={handleCloseModifyDialog}
           maxWidth="sm"
           fullWidth
+          fullScreen={isMobile}
         >
           <DialogTitle>修改建议</DialogTitle>
           <DialogContent>
@@ -314,7 +348,7 @@ function App() {
               label="修改意见"
               fullWidth
               multiline
-              rows={4}
+              rows={isMobile ? 8 : 12}
               value={modificationFeedback}
               onChange={(e) => setModificationFeedback(e.target.value)}
               variant="outlined"
