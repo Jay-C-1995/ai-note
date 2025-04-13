@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Box, 
-  TextField, 
-  Typography, 
+import {
+  Container,
+  Box,
+  TextField,
+  Typography,
   Paper,
   CircularProgress,
   IconButton,
@@ -18,13 +18,14 @@ import {
   DialogActions,
   Divider,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import CreateIcon from '@mui/icons-material/Create';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { generateSuggestions, expandSuggestion } from './services/api';
 import './App.css';
 
@@ -41,12 +42,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanding, setIsExpanding] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [editingSuggestion, setEditingSuggestion] = useState<Suggestion | null>(null);
   const [modificationFeedback, setModificationFeedback] = useState('');
+
   const [isModifying, setIsModifying] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
+
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -73,18 +78,30 @@ function App() {
     }
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(note);
+      setCopySuccess(true);
+    } catch (err) {
+      setError('复制失败，请手动复制');
+    }
+  };
+
   const handleSubmit = async () => {
     if (!note.trim()) return;
-    
+
     setIsLoading(true);
     setError(null);
+
     try {
       const generatedSuggestions = await generateSuggestions(note);
-      setSuggestions(generatedSuggestions.map((text: string, index: number) => ({
-        id: index + 1,
-        text,
-        isExpanded: false
-      })));
+      setSuggestions(
+        generatedSuggestions.map((text: string, index: number) => ({
+          id: index + 1,
+          text,
+          isExpanded: false,
+        }))
+      );
     } catch (error) {
       setError('生成建议时出错，请稍后重试');
       console.error('Error:', error);
@@ -95,9 +112,9 @@ function App() {
 
   const handleSuggestionClick = async (suggestion: Suggestion) => {
     if (suggestion.isExpanded) {
-      setSuggestions(suggestions.map(s => 
-        s.id === suggestion.id ? { ...s, isExpanded: false } : s
-      ));
+      setSuggestions(
+        suggestions.map(s => (s.id === suggestion.id ? { ...s, isExpanded: false } : s))
+      );
       return;
     }
 
@@ -105,11 +122,11 @@ function App() {
     setError(null);
     try {
       const expandedText = await expandSuggestion(note, suggestion.text);
-      setSuggestions(suggestions.map(s => 
-        s.id === suggestion.id 
-          ? { ...s, isExpanded: true, expandedText }
-          : s
-      ));
+      setSuggestions(
+        suggestions.map(s =>
+          s.id === suggestion.id ? { ...s, isExpanded: true, expandedText } : s
+        )
+      );
     } catch (error) {
       setError('展开建议时出错，请稍后重试');
       console.error('Error:', error);
@@ -120,9 +137,7 @@ function App() {
 
   const handleAdoptSuggestion = (suggestion: Suggestion) => {
     const newContent = suggestion.expandedText || suggestion.text;
-    setNote(prevNote => 
-      prevNote ? `${prevNote}\n\n${newContent}` : newContent
-    );
+    setNote(prevNote => (prevNote ? `${prevNote}\n\n${newContent}` : newContent));
   };
 
   const handleCloseError = () => {
@@ -149,12 +164,10 @@ function App() {
         note,
         `${editingSuggestion.text}\n\n修改意见：${modificationFeedback}`
       );
-      
-      setSuggestions(suggestions.map(s => 
-        s.id === editingSuggestion.id 
-          ? { ...s, expandedText }
-          : s
-      ));
+
+      setSuggestions(
+        suggestions.map(s => (s.id === editingSuggestion.id ? { ...s, expandedText } : s))
+      );
       handleCloseModifyDialog();
     } catch (error) {
       setError('修改建议时出错，请稍后重试');
@@ -179,7 +192,7 @@ function App() {
         id: suggestions.length + 1,
         text: customPrompt,
         expandedText,
-        isExpanded: true
+        isExpanded: true,
       };
       setSuggestions([...suggestions, newSuggestion]);
       setCustomPrompt('');
@@ -194,16 +207,16 @@ function App() {
   return (
     <Container maxWidth="md" sx={{ px: isMobile ? 0 : 2 }}>
       <Box sx={{ my: isMobile ? 2 : 4 }}>
-        <Typography 
-          variant={isMobile ? "h5" : "h4"} 
-          component="h1" 
-          gutterBottom 
+        <Typography
+          variant={isMobile ? 'h5' : 'h4'}
+          component="h1"
+          gutterBottom
           align="center"
           sx={{ px: isMobile ? 2 : 0 }}
         >
           ai 智能笔记-By CJ
         </Typography>
-        
+
         <Paper elevation={3} sx={{ p: isMobile ? 2 : 3, mb: 3, mx: isMobile ? 2 : 0 }}>
           <TextField
             fullWidth
@@ -217,59 +230,78 @@ function App() {
           />
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Tooltip title="保存笔记">
-              <IconButton
-                color="primary"
-                onClick={handleSave}
-                disabled={!note.trim()}
-              >
+              <IconButton color="primary" onClick={handleSave} disabled={!note.trim()}>
                 <SaveIcon />
               </IconButton>
             </Tooltip>
-            {isMobile ? (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                disabled={isLoading || !note.trim()}
-                startIcon={isLoading ? <CircularProgress size={20} /> : <SendIcon />}
-                sx={{ ml: 1 }}
-              >
-                生成建议
-              </Button>
-            ) : (
-              <Tooltip title="生成建议">
-                <span>
+            <Box>
+              {isMobile ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleCopy}
+                  disabled={!note.trim()}
+                  sx={{ mr: 1 }}
+                >
+                  复制笔记
+                </Button>
+              ) : (
+                <Tooltip title="复制笔记">
                   <IconButton
                     color="primary"
-                    onClick={handleSubmit}
-                    disabled={isLoading || !note.trim()}
+                    onClick={handleCopy}
+                    disabled={!note.trim()}
+                    sx={{ mr: 1 }}
                   >
-                    {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                    <ContentCopyIcon />
                   </IconButton>
-                </span>
-              </Tooltip>
-            )}
+                </Tooltip>
+              )}
+              {isMobile ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  disabled={isLoading || !note.trim()}
+                  startIcon={isLoading ? <CircularProgress size={20} /> : <SendIcon />}
+                >
+                  生成建议
+                </Button>
+              ) : (
+                <Tooltip title="生成建议">
+                  <span>
+                    <IconButton
+                      color="primary"
+                      onClick={handleSubmit}
+                      disabled={isLoading || !note.trim()}
+                    >
+                      {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
+            </Box>
           </Box>
         </Paper>
 
         {suggestions.length > 0 && (
           <Paper elevation={3} sx={{ p: isMobile ? 2 : 3, mx: isMobile ? 2 : 0 }}>
-            <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom>
+            <Typography variant={isMobile ? 'subtitle1' : 'h6'} gutterBottom>
               建议提示：
             </Typography>
-            {suggestions.map((suggestion) => (
+            {suggestions.map(suggestion => (
               <Box key={suggestion.id} sx={{ mb: 2 }}>
                 <Chip
                   label={suggestion.text}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  sx={{ 
-                    mb: 1, 
+                  sx={{
+                    mb: 1,
                     cursor: 'pointer',
                     maxWidth: '100%',
                     '& .MuiChip-label': {
                       whiteSpace: 'normal',
-                      textAlign: 'left'
-                    }
+                      textAlign: 'left',
+                    },
                   }}
                   color={suggestion.isExpanded ? 'primary' : 'default'}
                 />
@@ -278,14 +310,16 @@ function App() {
                     <Typography sx={{ mb: 1, fontSize: isMobile ? '0.9rem' : '1rem' }}>
                       {suggestion.expandedText}
                     </Typography>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      gap: 1,
-                      flexDirection: isMobile ? 'column' : 'row'
-                    }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 1,
+                        flexDirection: isMobile ? 'column' : 'row',
+                      }}
+                    >
                       <Button
                         variant="outlined"
-                        size={isMobile ? "small" : "medium"}
+                        size={isMobile ? 'small' : 'medium'}
                         startIcon={<AddIcon />}
                         onClick={() => handleAdoptSuggestion(suggestion)}
                         fullWidth={isMobile}
@@ -294,7 +328,7 @@ function App() {
                       </Button>
                       <Button
                         variant="outlined"
-                        size={isMobile ? "small" : "medium"}
+                        size={isMobile ? 'small' : 'medium'}
                         startIcon={<EditIcon />}
                         onClick={() => handleModifySuggestion(suggestion)}
                         fullWidth={isMobile}
@@ -311,17 +345,19 @@ function App() {
             ))}
 
             <Divider sx={{ my: 2 }} />
-            
+
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle1" gutterBottom>
                 自定义建议：
               </Typography>
-              <Box sx={{ 
-                display: 'flex', 
-                gap: 1, 
-                alignItems: 'flex-start',
-                flexDirection: isMobile ? 'column' : 'row'
-              }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'flex-start',
+                  flexDirection: isMobile ? 'column' : 'row',
+                }}
+              >
                 <TextField
                   fullWidth
                   multiline
@@ -332,13 +368,17 @@ function App() {
                   onChange={handleCustomPromptChange}
                 />
                 <Tooltip title="生成自定义建议">
-                  <IconButton 
-                    color="primary" 
+                  <IconButton
+                    color="primary"
                     onClick={handleGenerateCustomSuggestion}
                     disabled={isGeneratingCustom || !customPrompt.trim()}
                     sx={{ alignSelf: isMobile ? 'flex-end' : 'auto' }}
                   >
-                    {isGeneratingCustom ? <CircularProgress size={isMobile ? 20 : 24} /> : <CreateIcon />}
+                    {isGeneratingCustom ? (
+                      <CircularProgress size={isMobile ? 20 : 24} />
+                    ) : (
+                      <CreateIcon />
+                    )}
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -346,8 +386,8 @@ function App() {
           </Paper>
         )}
 
-        <Dialog 
-          open={!!editingSuggestion} 
+        <Dialog
+          open={!!editingSuggestion}
           onClose={handleCloseModifyDialog}
           maxWidth="sm"
           fullWidth
@@ -363,14 +403,14 @@ function App() {
               multiline
               rows={isMobile ? 8 : 12}
               value={modificationFeedback}
-              onChange={(e) => setModificationFeedback(e.target.value)}
+              onChange={e => setModificationFeedback(e.target.value)}
               variant="outlined"
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseModifyDialog}>取消</Button>
-            <Button 
-              onClick={handleSubmitModification} 
+            <Button
+              onClick={handleSubmitModification}
               disabled={!modificationFeedback.trim() || isModifying}
               startIcon={isModifying ? <CircularProgress size={20} /> : null}
             >
@@ -379,9 +419,9 @@ function App() {
           </DialogActions>
         </Dialog>
 
-        <Snackbar 
-          open={!!error} 
-          autoHideDuration={6000} 
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
           onClose={handleCloseError}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
@@ -390,13 +430,24 @@ function App() {
           </Alert>
         </Snackbar>
 
-        <Snackbar 
-          open={saveSuccess} 
-          autoHideDuration={3000} 
+        <Snackbar
+          open={saveSuccess}
+          autoHideDuration={3000}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
           <Alert severity="success" sx={{ width: '100%' }}>
             笔记已保存
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={copySuccess}
+          autoHideDuration={3000}
+          onClose={() => setCopySuccess(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={() => setCopySuccess(false)} severity="success" sx={{ width: '100%' }}>
+            复制成功！快去微信上粘贴发送给你的朋友看看吧
           </Alert>
         </Snackbar>
       </Box>
